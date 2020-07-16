@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	msgpack2 "github.com/ugorji/go-msgpack"
 	"github.com/ugorji/go/codec"
 	. "gopkg.in/check.v1"
 
@@ -777,22 +776,6 @@ func BenchmarkIntBinary(b *testing.B) {
 	}
 }
 
-func BenchmarkIntMsgpack2(b *testing.B) {
-	buf := &bytes.Buffer{}
-	dec := msgpack2.NewDecoder(buf, nil)
-	enc := msgpack2.NewEncoder(buf)
-
-	var out int
-	for i := 0; i < b.N; i++ {
-		if err := enc.Encode(1); err != nil {
-			b.Fatal(err)
-		}
-		if err := dec.Decode(&out); err != nil {
-			b.Fatal(err)
-		}
-	}
-}
-
 func BenchmarkIntMsgpack3(b *testing.B) {
 	buf := &bytes.Buffer{}
 	enc := codec.NewEncoder(buf, &codec.MsgpackHandle{})
@@ -958,22 +941,6 @@ func BenchmarkStructManual(b *testing.B) {
 		}
 
 		err = msgpack.Unmarshal(buf, out)
-		if err != nil {
-			b.Fatal(err)
-		}
-	}
-}
-
-func BenchmarkStructMsgpack2(b *testing.B) {
-	in := structForBenchmark()
-	out := &benchmarkStruct{}
-	for i := 0; i < b.N; i++ {
-		buf, err := msgpack2.Marshal(in)
-		if err != nil {
-			b.Fatal(err)
-		}
-
-		err = msgpack2.Unmarshal(buf, out, nil)
 		if err != nil {
 			b.Fatal(err)
 		}
